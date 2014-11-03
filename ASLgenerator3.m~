@@ -1,0 +1,593 @@
+function varargout = ASLgenerator3(varargin)
+% ASLGENERATOR3 M-file for ASLgenerator3.fig
+%      ASLGENERATOR3, by itself, creates a new ASLGENERATOR3 or raises the existing
+%      singleton*.
+%
+%      H = ASLGENERATOR3 returns the handle to a new ASLGENERATOR3 or the handle to
+%      the existing singleton*.
+%
+%      ASLGENERATOR3('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in ASLGENERATOR3.M with the given input arguments.
+%
+%      ASLGENERATOR3('Property','Value',...) creates a new ASLGENERATOR3 or raises the
+%      existing singleton*.  Starting from the left, property value pairs are
+%      applied to the GUI before ASLgenerator3_OpeningFcn gets called.  An
+%      unrecognized property name or invalid value makes property application
+%      stop.  All inputs are passed to ASLgenerator3_OpeningFcn via varargin.
+%
+%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+%      instance to run (singleton)".
+%
+% See also: GUIDE, GUIDATA, GUIHANDLES
+
+% Edit the above text to modify the response to help ASLgenerator3
+
+% Last Modified by GUIDE v2.5 25-Feb-2014 15:48:34
+
+% Begin initialization code - DO NOT EDIT
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @ASLgenerator3_OpeningFcn, ...
+                   'gui_OutputFcn',  @ASLgenerator3_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+
+function ASLgenerator3_OpeningFcn(hObject, eventdata, handles, varargin)
+handles.output = hObject;
+handles.color = 0;
+handles.cmap = [1 0 0;0 1 0;0 0 1;0 1 0;0 1 1;];
+guidata(hObject, handles);
+
+function varargout = ASLgenerator3_OutputFcn(hObject, eventdata, handles) 
+varargout{1} = handles.output;
+
+%% Pushbuttons
+
+function pushbutton1_Callback(hObject, eventdata, handles)
+editor=get(handles.edit21,'Value');
+handles.color = handles.color+1;
+guidata(hObject, handles)
+%if editor==0
+%    set(handles.edit21,'String','0:0.01:5');
+%end
+plottingASL(hObject, eventdata, handles);
+
+function pushbutton2_Callback(hObject, eventdata, handles)
+cla(handles.axes1)
+set(handles.edit21,'String','0:0.01:5');
+handles.color = 0;
+guidata(hObject, handles)
+
+function pushbutton3_Callback(hObject, eventdata, handles)
+cla(handles.axes1)
+savingASL(hObject, eventdata, handles);
+
+%% Popupmenus
+
+function popupmenu1_Callback(hObject, eventdata, handles)
+XASL = get(handles.popupmenu1,'Value');
+
+if XASL == 1  % PASL
+    set(handles.edit7,'String','0.8');
+    set(handles.edit6,'String','0.98');
+else   % CASL
+    set(handles.edit7,'String','1.4');
+    set(handles.edit6,'String','0.85');
+end
+
+function popupmenu1_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function popupmenu2_Callback(hObject, eventdata, handles)
+Disp = get(handles.popupmenu2,'Value');
+
+if Disp == 2   % Gaussian
+    set(handles.text21,'vis','on');
+    set(handles.edit8,'vis','on');
+else
+    set(handles.text21,'vis','off');
+    set(handles.edit8,'vis','off');
+end
+
+if Disp == 3   % Gamma
+    set(handles.text22,'vis','on');
+    set(handles.text23,'vis','on');
+    set(handles.edit9,'vis','on');
+    set(handles.edit10,'vis','on');
+else
+    set(handles.text22,'vis','off');
+    set(handles.text23,'vis','off');
+    set(handles.edit9,'vis','off');
+    set(handles.edit10,'vis','off');
+end
+
+if Disp == 4   % GV
+    set(handles.text24,'vis','on');
+    set(handles.text25,'vis','on');
+    set(handles.edit11,'vis','on');
+    set(handles.edit12,'vis','on');     
+else
+    set(handles.text24,'vis','off');
+    set(handles.text25,'vis','off');
+    set(handles.edit11,'vis','off');
+    set(handles.edit12,'vis','off');
+end
+
+if Disp == 5   % Gallichan
+    set(handles.text47,'vis','on');
+    set(handles.edit31,'vis','on');
+    set(handles.text48,'vis','on');
+    set(handles.edit32,'vis','on');
+else
+    set(handles.text47,'vis','off');
+    set(handles.edit31,'vis','off');
+    set(handles.text48,'vis','off');
+    set(handles.edit32,'vis','off');
+end
+
+function popupmenu2_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function popupmenu3_Callback(hObject, eventdata, handles)
+Residue = get(handles.popupmenu3,'Value');
+Venous = get(handles.checkbox4,'Value');
+
+if Residue == 1 % Buxton
+    if Venous
+       set(handles.popupmenu4,'Value',2) 
+       set(handles.text38,'vis','off')
+       set(handles.edit22,'vis','off')
+       set(handles.text39,'vis','off')
+       set(handles.edit23,'vis','off')
+    end
+    set(handles.text33,'vis','off');
+    set(handles.edit17,'vis','off');
+    set(handles.text34,'vis','off');
+    set(handles.edit18,'vis','off');
+    set(handles.text35,'vis','off');
+    set(handles.edit19,'vis','off');
+    set(handles.text36,'vis','off');
+    set(handles.edit20,'vis','off');
+elseif Residue == 2   % SPA
+    set(handles.text33,'vis','on');
+    set(handles.edit17,'vis','on');
+    set(handles.text34,'vis','on');
+    set(handles.edit18,'vis','on');
+    set(handles.text35,'vis','on');
+    set(handles.edit19,'vis','on');
+    set(handles.text36,'vis','on');
+    set(handles.edit20,'vis','on');
+    if Venous
+        set(handles.popupmenu4,'Value',1)
+        set(handles.text38,'vis','on')
+        set(handles.edit22,'vis','on')
+        set(handles.text39,'vis','on')
+        set(handles.edit23,'vis','on')
+    end
+else
+    set(handles.text33,'vis','off');
+    set(handles.edit17,'vis','off');
+    set(handles.text34,'vis','off');
+    set(handles.edit18,'vis','off');
+    set(handles.text35,'vis','off');
+    set(handles.edit19,'vis','off');
+    set(handles.text36,'vis','off');
+    set(handles.edit20,'vis','off');
+     if Venous
+       set(handles.popupmenu4,'Value',2) 
+       set(handles.text38,'vis','off')
+       set(handles.edit22,'vis','off')
+       set(handles.text39,'vis','off')
+       set(handles.edit23,'vis','off')
+    end
+end
+
+function popupmenu3_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function popupmenu4_Callback(hObject, eventdata, handles)
+Venous = get(handles.popupmenu4,'Value');
+
+if Venous == 1   %SPA
+   set(handles.text38,'vis','on') 
+   set(handles.edit22,'vis','on')
+   set(handles.text39,'vis','on') 
+   set(handles.edit23,'vis','on')
+else
+   set(handles.text38,'vis','off') 
+   set(handles.edit22,'vis','off')
+   set(handles.text39,'vis','off') 
+   set(handles.edit23,'vis','off')
+end
+
+function popupmenu4_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+%% Checkboxes
+
+function checkbox1_Callback(hObject, eventdata, handles)
+
+
+function checkbox2_Callback(hObject, eventdata, handles)
+Imp_comp1 = get(handles.checkbox2,'Value');
+
+if Imp_comp1
+    set(handles.text27,'vis','on');
+    set(handles.edit14,'vis','on');
+    set(handles.text30,'vis','on');
+else
+    set(handles.text27,'vis','off');
+    set(handles.edit14,'vis','off');
+    set(handles.text30,'vis','off');
+end
+    
+function checkbox3_Callback(hObject, eventdata, handles)
+tissue = get(handles.checkbox3,'Value');
+tiss_rm = get(handles.popupmenu3,'Value');
+
+if tissue
+    set(handles.text28,'vis','on');
+    set(handles.edit15,'vis','on');
+    set(handles.text31,'vis','on');
+    set(handles.popupmenu3,'vis','on')
+    if tiss_rm == 2
+        set(handles.text33,'vis','on');
+        set(handles.edit17,'vis','on');
+        set(handles.text34,'vis','on');
+        set(handles.edit18,'vis','on');
+        set(handles.text35,'vis','on');
+        set(handles.edit19,'vis','on');
+        set(handles.text36,'vis','on');
+        set(handles.edit20,'vis','on');
+    else
+        set(handles.text33,'vis','off');
+        set(handles.edit17,'vis','off');
+        set(handles.text34,'vis','off');
+        set(handles.edit18,'vis','off');
+        set(handles.text35,'vis','off');
+        set(handles.edit19,'vis','off');
+        set(handles.text36,'vis','off');
+        set(handles.edit20,'vis','off');
+    end
+else
+    set(handles.text28,'vis','off');
+    set(handles.edit15,'vis','off');
+    set(handles.text31,'vis','off');
+    set(handles.popupmenu3,'vis','off')
+    set(handles.text33,'vis','off');
+    set(handles.edit17,'vis','off');
+    set(handles.text34,'vis','off');
+    set(handles.edit18,'vis','off');
+    set(handles.text35,'vis','off');
+    set(handles.edit19,'vis','off');
+    set(handles.text36,'vis','off');
+    set(handles.edit20,'vis','off');
+end
+
+function checkbox4_Callback(hObject, eventdata, handles)
+venous = get(handles.checkbox4,'Value');
+
+if venous
+    set(handles.text29,'vis','on');
+    set(handles.edit16,'vis','on');
+    set(handles.text32,'vis','on');
+    set(handles.text38,'vis','on') 
+    set(handles.edit22,'vis','on')
+    set(handles.text39,'vis','on') 
+    set(handles.edit23,'vis','on')
+    tissue=get(handles.popupmenu3,'Value');
+    if tissue==1  %Buxton
+        set(handles.popupmenu4,'Value',2)
+        set(handles.text38,'vis','off') 
+        set(handles.edit22,'vis','off')
+        set(handles.text39,'vis','off') 
+        set(handles.edit23,'vis','off')
+    elseif tissue==2 %SPA
+        set(handles.popupmenu4,'Value',1);
+        set(handles.text38,'vis','on') 
+        set(handles.edit22,'vis','on')
+        set(handles.text39,'vis','on') 
+        set(handles.edit23,'vis','on')
+    else
+        set(handles.popupmenu4,'Value',2);
+        set(handles.text38,'vis','off') 
+        set(handles.edit22,'vis','off')
+        set(handles.text39,'vis','off') 
+        set(handles.edit23,'vis','off')
+    end
+    set(handles.popupmenu4,'vis','on');
+else
+    set(handles.text29,'vis','off');
+    set(handles.edit16,'vis','off');
+    set(handles.text32,'vis','off');
+    set(handles.popupmenu4,'vis','off');
+    set(handles.text38,'vis','off') 
+    set(handles.edit22,'vis','off')
+    set(handles.text39,'vis','off') 
+    set(handles.edit23,'vis','off')
+end
+
+function checkbox5_Callback(hObject, eventdata, handles)
+vein = get(handles.checkbox5,'Value');
+
+if vein
+   set(handles.text46,'vis','on');
+   set(handles.edit28,'vis','on');
+else
+   set(handles.text46,'vis','off');
+   set(handles.edit28,'vis','off');
+end
+
+
+function checkbox6_Callback(hObject, eventdata, handles)
+arterial = get(handles.checkbox6,'Value');
+
+if arterial
+   set(handles.text45,'vis','on');
+   set(handles.edit27,'vis','on');
+else
+   set(handles.text45,'vis','off');
+   set(handles.edit27,'vis','off');
+end
+
+%% Edits
+
+function edit1_Callback(hObject, eventdata, handles)
+% hObject    handle to edit1 (see GCBO)
+
+function edit1_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+
+function edit2_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit3_Callback(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+
+function edit3_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit4_Callback(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+
+function edit4_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit5_Callback(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+
+function edit5_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit6_Callback(hObject, eventdata, handles)
+% hObject    handle to edit6 (see GCBO)
+
+function edit6_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit7_Callback(hObject, eventdata, handles)
+% hObject    handle to edit7 (see GCBO)
+
+function edit7_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit8_Callback(hObject, eventdata, handles)
+% hObject    handle to edit8 (see GCBO)
+
+function edit8_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit9_Callback(hObject, eventdata, handles)
+% hObject    handle to edit9 (see GCBO)
+
+function edit9_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit10_Callback(hObject, eventdata, handles)
+% hObject    handle to edit10 (see GCBO)
+
+function edit10_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit11_Callback(hObject, eventdata, handles)
+% hObject    handle to edit11 (see GCBO)
+
+function edit11_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit12_Callback(hObject, eventdata, handles)
+% hObject    handle to edit12 (see GCBO)
+
+function edit12_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit13_Callback(hObject, eventdata, handles)
+% hObject    handle to edit13 (see GCBO)
+
+function edit13_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit14_Callback(hObject, eventdata, handles)
+% hObject    handle to edit14 (see GCBO)
+
+function edit14_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit15_Callback(hObject, eventdata, handles)
+% hObject    handle to edit15 (see GCBO)
+
+function edit15_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit16_Callback(hObject, eventdata, handles)
+% hObject    handle to edit16 (see GCBO)
+
+function edit16_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit17_Callback(hObject, eventdata, handles)
+% hObject    handle to edit17 (see GCBO)
+
+function edit17_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit18_Callback(hObject, eventdata, handles)
+% hObject    handle to edit18 (see GCBO)
+
+function edit18_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit19_Callback(hObject, eventdata, handles)
+% hObject    handle to edit19 (see GCBO)
+
+function edit19_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit20_Callback(hObject, eventdata, handles)
+% hObject    handle to edit20 (see GCBO)
+
+function edit20_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit21_Callback(hObject, eventdata, handles)
+% hObject    handle to edit21 (see GCBO)
+
+function edit21_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit22_Callback(hObject, eventdata, handles)
+% hObject    handle to edit22 (see GCBO)
+
+function edit22_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit23_Callback(hObject, eventdata, handles)
+% hObject    handle to edit23 (see GCBO)
+
+function edit23_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit24_Callback(hObject, eventdata, handles)
+% hObject    handle to edit24 (see GCBO)
+
+function edit24_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit25_Callback(hObject, eventdata, handles)
+% hObject    handle to edit25 (see GCBO)
+
+function edit25_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit26_Callback(hObject, eventdata, handles)
+% hObject    handle to edit26 (see GCBO)
+
+function edit26_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit27_Callback(hObject, eventdata, handles)
+% hObject    handle to edit27 (see GCBO)
+
+function edit27_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit28_Callback(hObject, eventdata, handles)
+% hObject    handle to edit28 (see GCBO)
+
+function edit28_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit31_Callback(hObject, eventdata, handles)
+% hObject    handle to edit31 (see GCBO)
+
+function edit31_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function edit32_Callback(hObject, eventdata, handles)
+% hObject    handle to edit32 (see GCBO)
+
+function edit32_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+

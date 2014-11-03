@@ -1,0 +1,7 @@
+# Sequence/scanner parameters
+--t1=1.3
+--t1b=1.5
+--tau=0.8
+
+# Data information
+--repeats=10 --ti1=0.2 --ti2=0.5 --ti3=0.8 --ti4=1.1 --ti5=1.4 --ti6=1.7 --ti7=2.0 --ti8=2.3 --ti9=2.6 --ti10=2.9

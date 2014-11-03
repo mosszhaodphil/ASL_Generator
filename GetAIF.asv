@@ -1,0 +1,18 @@
+function AIF = GetAIF(t,params,XASL,value)
+%Select the AIF function
+
+    switch value
+    case 1   % None
+        AIF = GetaBuxton(t,params,XASL);
+    case 2   % Gaussian
+        sigma
+        AIF = GetaGaussian(t,params,XASL,sigma);
+    case 3   % Gamma
+        AIF = GetaGamma(t,params,XASL);
+    case 4   % GV
+        AIF = GetaGV(t,params,XASL);
+    case 5   % Gallichan
+        AIF = GetaGallichan(t,params,XASL);
+    end
+end
+

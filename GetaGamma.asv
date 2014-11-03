@@ -1,0 +1,72 @@
+function a = GetaGamma(t,params,XASL)
+
+%XASL = 1, PASL
+%XASL = 2, CASL
+
+%Define global parameters
+deltaTa = params(1);
+taua = params(2);
+T_1 = params(3);
+T_1b = params(4);
+fcalib = params(5);
+taupc = params(6);
+
+%Define local parameter
+
+%sharpness/s^-1
+%High 
+%s = 10;
+%Medium 
+s = exp(2);
+%Low 
+%s = 50;
+%time to peak of curve/s
+sp = exp(-0.3);
+p = sp/s;
+
+x = 1+(s*p);
+
+%PASL
+if XASL>=2
+    for j=1:length(t)
+    if (deltaTa)>t(j)
+        a(j) = 0;
+    elseif (deltaTa)<=t(j) && t(j)<(deltaTa+taua)
+        y(j) = s*(t(j)-(deltaTa));
+        a(j) = (exp(-t(j)/T_1b))*(1-gammainc(x,y(j)));
+    elseif t(j)>=(deltaTa+taua);
+        y1(j) = s*(t(j)-(deltaTa));
+        y2(j) = s*(t(j)-(deltaTa+taua));
+        Q1(j) = gammainc(x,y1(j));
+        Q2(j) = gammainc(x,y2(j));
+        a(j) = (exp(-t(j)/T_1b))*(Q2(j)-Q1(j));
+    end
+    end
+    
+%CASL    
+elseif XASL<2
+    for j=1:length(t)
+    if (deltaTa)>t(j)
+        a(j) = 0;
+    elseif (deltaTa)<=t(j) && t(j)<(deltaTa+taua)
+        y(j) = s*(t(j)-(deltaTa));
+        a(j) = exp(-deltaTa/T_1b)*(1-gammainc(x,y(j)));
+    elseif t(j)>=(deltaTa+taua);
+        y1(j) = s*(t(j)-(deltaTa));
+        y2(j) = s*(t(j)-(deltaTa+taua));
+        Q1(j) = gammainc(x,y1(j));
+        Q2(j) = gammainc(x,y2(j));
+        a(j) = (exp(-deltaTa/T_1b))*(Q2(j)-Q1(j));
+    end
+    end
+end
+end
+
+        
+
+
+
+        
+    
+
+

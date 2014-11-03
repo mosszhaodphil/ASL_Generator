@@ -1,0 +1,44 @@
+%Residue and magnetisation decay Buxton
+
+function rm = GetrmBuxton(t,params,XASL)
+
+deltaTa = params(1);
+taua = params(2);
+T_1 = params(3);
+T_1b = params(4);
+fcalib = params(5);
+alfa = params(6);
+lambda = params(7);
+taupc = params(8);
+tauc   = params(9);
+tauv = params(10);
+
+if XASL==1   %PASL
+    for j=1:length(t)
+        if (tauc >t(j))
+            rm(j) = 0;
+        elseif (deltaTa)<=t(j) && t(j)<(deltaTa+taua)
+            r(j) = exp((-(fcalib*t(j)))/lambda);
+            m(j) = exp(-t(j)/T_1);
+            rm(j) = r(j)*m(j);
+        elseif t(j)>=(deltaTa+taua);
+            rm(j) = 0;
+        end
+    end
+    
+% else    %CASL
+%     for j=1:length(t)
+%         if (deltaTa >t(j))
+%             rm(j) = 0;
+%         elseif (deltaTa)<=t(j) && t(j)<(deltaTa+taua)
+%             r(j) = exp((-(fcalib*t(j)))/lambda);
+%             m(j) = exp(-t(j)/T_1);
+%             rm(j) = r(j)*m(j);
+%         elseif t(j)>=(deltaTa+taua);
+%             rm(j) = 0;
+%         end
+%     end
+% end
+
+end
+

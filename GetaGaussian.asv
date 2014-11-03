@@ -1,0 +1,46 @@
+function AIF = GetaGaussian(t,params,XASL);
+%% 
+
+%XASL = 1, PASL
+%XASL = 2, CASL
+
+%Define global parameters
+deltaTa = params(1);
+taua = params(2);
+T_1 = params(3);
+T_1b = params(4);
+fcalib = params(5);
+taupc = params(6);
+
+%Define local parameters
+
+% Low 
+%sigma1 = 0.02;
+% Medium 
+sigma1 = 0.05;
+% High 
+%sigma1 = 0.1;
+sigma2 = (sqrt(((deltaTa)+taua)/(deltaTa)))*sigma1;
+
+%proxy for time
+m=[0:0.005:8];
+
+%PASL
+if XASL==1
+    for j=1:length(t)
+        term1(j) = erf((t(j)-(deltaTa))/((sqrt(2))*sigma1));
+        term2(j) = erf((t(j)-(deltaTa+taua))/((sqrt(2))*sigma2));
+        AIF(j) = 0.5*(term1(j)-term2(j))*exp(-t(j)/T_1b);
+    end
+end
+
+%CASL
+if XASL==2
+    for j=1:length(t)
+        term1(j) = erf((t(j)-(deltaTa))/((sqrt(2))*sigma1));
+        term2(j) = erf((t(j)-(deltaTa+taua))/((sqrt(2))*sigma2));
+        AIF(j) = 0.5*(term1(j)-term2(j))*exp(-deltaTa/T_1b);
+    end
+end
+end
+

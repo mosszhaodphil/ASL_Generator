@@ -1,0 +1,57 @@
+function AIF = GetaGV(t,params,extra_params,XASL)
+%% Chappell, M.A., Woolrich, M.W., Kazan, S., Jezzard, P., Payne, S.J.,
+%% MacIntosh, B.J., 2013. Modeling dispersion in arterial spin labeling: validation using dynamic angiographic measurements. Magn Reson Med 69, 563–570.
+
+%XASL = 1, PASL
+%XASL = 2, CASL
+
+deltaTa = params(1);
+taua = params(2);
+T_1t = params(3);
+T_1b = params(4);
+fcalib = params(5);
+alfa = params(6);
+lambda = params(7);
+taupc = params(8);
+tauc   = params(9);
+tauv = params(10);
+
+% s = 2;
+% p = 0.5;
+s = extra_params(1);
+p = extra_params(2);
+x = 1+(s*p);
+
+%m=[0:0.005:8];
+m=t;
+
+%PASL
+if XASL==1
+    for j=1:length(t)
+        if (deltaTa+taupc)>t(j)
+            a(j) = 0;
+        elseif t(j)>=(deltaTa+taupc);
+            a1(j) =exp(-s*(t(j)-(deltaTa+taupc)));
+            a2(j) = (t(j)-(deltaTa+taupc))^(s*p);
+            a3 = (s^x)/gamma(x);
+            a4(j) = taua*(exp(-m(j)/T_1b));
+            AIF(j) = a1(j)*a2(j)*a3*a4(j);
+        end
+    end
+end
+
+%CASL
+if XASL==2
+    for j=1:length(t)
+        if (deltaTa+taupc)>t(j)
+            a(j) = 0;
+        elseif t(j)>=(deltaTa+taupc);
+            a1(j) =exp(-s*(t(j)-(deltaTa+taupc)));
+            a2(j) = (t(j)-(deltaTa+taupc))^(s*p);
+            a3 = (s^x)/gamma(x);
+            a4(j) = taua*(exp(-deltaTa/T_1b));
+            AIF(j) = a1(j)*a2(j)*a3*a4(j);
+        end
+    end
+end
+end
